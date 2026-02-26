@@ -1,0 +1,23 @@
+{
+  "name": "@toto-huat/backend",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "ingest:latest": "tsx src/cli.ts latest",
+    "ingest:backfill": "tsx src/cli.ts backfill",
+    "ingest:status": "tsx src/cli.ts status",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.6.2",
+    "cheerio": "^1.2.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}
