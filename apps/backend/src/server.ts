@@ -13,10 +13,14 @@ import type { DrawRecord } from "./db/index.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DB_PATH = resolve(__dirname, "..", "data", "toto.db");
 
+// Draw 2995 (2014-10-09) is the first draw under the 6/49 format.
+// Before this, the pool was 1-45. Mixing eras skews analysis for numbers 46-49.
+const FIRST_6_OF_49_DRAW = 2995;
+
 function withDraws<T>(fn: (draws: DrawRecord[]) => T): T {
   const db = openDb(DB_PATH);
   try {
-    const draws = getAllDraws(db);
+    const draws = getAllDraws(db).filter((d) => d.drawNumber >= FIRST_6_OF_49_DRAW);
     return fn(draws);
   } finally {
     db.close();
@@ -72,12 +76,13 @@ app.get("/api/draws", (c) => {
   const page = Math.max(1, parseInt(c.req.query("page") || "1", 10));
   const limit = Math.min(100, Math.max(1, parseInt(c.req.query("limit") || "20", 10)));
 
+  // History page shows all draws, not just the 6/49 era
   const db = openDb(DB_PATH);
   try {
     const total = getDrawCount(db);
-    const draws = getAllDraws(db);
+    const allDraws = getAllDraws(db);
     const start = (page - 1) * limit;
-    const paginated = draws.reverse().slice(start, start + limit);
+    const paginated = allDraws.reverse().slice(start, start + limit);
     return c.json({ draws: paginated, total, page, limit });
   } finally {
     db.close();
