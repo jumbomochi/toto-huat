@@ -34,7 +34,8 @@ describe("getNumberFrequencies", () => {
 describe("classifyHotCold", () => {
   it("classifies numbers relative to expected frequency", () => {
     const freq = getNumberFrequencies(draws);
-    const classified = classifyHotCold(freq);
+    // With small data (3 draws), use a low threshold to test classification
+    const classified = classifyHotCold(freq, 0.5);
     expect(classified.hot).toContain(1);
     expect(classified.cold.length).toBeGreaterThan(0);
     expect(classified.cold).toContain(49);

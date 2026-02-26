@@ -38,7 +38,7 @@ export function getNumberFrequencies(draws: DrawRecord[]): NumberFrequencies {
   return { main, additional, totalDraws: draws.length };
 }
 
-export function classifyHotCold(freq: NumberFrequencies, thresholdZ = 0.5): HotColdResult {
+export function classifyHotCold(freq: NumberFrequencies, thresholdZ = 1.5): HotColdResult {
   const expected = freq.totalDraws * 6 / 49;
   const stdDev = Math.sqrt(freq.totalDraws * (6 / 49) * (1 - 6 / 49));
 
