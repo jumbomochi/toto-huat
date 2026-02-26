@@ -1,0 +1,46 @@
+name: Ingest Toto Results
+
+on:
+  schedule:
+    # Mon & Thu at 13:00 UTC = 9 PM SGT
+    - cron: "0 13 * * 1,4"
+  workflow_dispatch: # allow manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/backend/pnpm-lock.yaml
+
+      - name: Install dependencies
+        working-directory: apps/backend
+        run: pnpm install --frozen-lockfile
+
+      - name: Run ingestion
+        working-directory: apps/backend
+        run: pnpm ingest:latest
+
+      - name: Commit new data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet apps/backend/data/; then
+            echo "No new data"
+          else
+            git add apps/backend/data/toto.db
+            git commit -m "data: ingest latest toto results"
+            git push
+          fi
