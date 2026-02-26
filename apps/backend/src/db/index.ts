@@ -105,6 +105,10 @@ export function getAllDraws(db: Database.Database): DrawRecord[] {
 
 export function openDb(path: string): Database.Database {
   const db = new Database(path);
-  initDb(db);
+  // In Lambda the DB comes pre-built from S3 — skip WAL mode and migrations
+  // to avoid creating -wal/-shm files in /tmp
+  if (!process.env.LAMBDA_TASK_ROOT) {
+    initDb(db);
+  }
   return db;
 }

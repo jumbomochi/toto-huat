@@ -11,7 +11,7 @@ import { generatePicks } from "./analysis/recommend.js";
 import type { DrawRecord } from "./db/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DB_PATH = resolve(__dirname, "..", "data", "toto.db");
+const DB_PATH = process.env.TOTO_DB_PATH || resolve(__dirname, "..", "data", "toto.db");
 
 // Draw 2995 (2014-10-09) is the first draw under the 6/49 format.
 // Before this, the pool was 1-45. Mixing eras skews analysis for numbers 46-49.
