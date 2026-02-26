@@ -1,0 +1,9 @@
+{
+  "name": "toto-huat",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "pnpm --filter @toto-huat/backend dev",
+    "dev": "pnpm -r --parallel dev"
+  }
+}

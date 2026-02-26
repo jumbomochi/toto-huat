@@ -6,7 +6,9 @@ settings:
 
 importers:
 
-  .:
+  .: {}
+
+  apps/backend:
     dependencies:
       better-sqlite3:
         specifier: ^12.6.2
