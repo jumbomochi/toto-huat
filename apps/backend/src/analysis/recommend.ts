@@ -1,6 +1,7 @@
 import type { DrawRecord } from "../db/index.js";
 import { getNumberFrequencies, classifyHotCold, getOverdueNumbers } from "./frequency.js";
 import { trendingNumbers } from "./trends.js";
+import { computeBayesianModel } from "./bayesian.js";
 
 export interface NumberScore {
   number: number;
@@ -31,6 +32,9 @@ export function generatePicks(draws: DrawRecord[]): Recommendation {
   const overdue = getOverdueNumbers(draws);
   const windowSize = Math.min(TREND_WINDOW, Math.floor(draws.length / 2));
   const trending = windowSize > 0 ? trendingNumbers(draws, windowSize) : [];
+
+  const bayesian = computeBayesianModel(draws, 200);
+  const bayesianMap = new Map(bayesian.estimates.map((e) => [e.number, e]));
 
   const hotSet = new Set(hotCold.hot);
   const coldSet = new Set(hotCold.cold);
@@ -63,6 +67,16 @@ export function generatePicks(draws: DrawRecord[]): Recommendation {
     if (coldSet.has(n)) {
       score += 1;
       factors.push("cold (regression to mean)");
+    }
+
+    // Bayesian factor
+    const bayesianEstimate = bayesianMap.get(n);
+    if (bayesianEstimate) {
+      const bayesianScore = Math.min(bayesianEstimate.deviationFromUniform * 400, 3);
+      if (bayesianScore > 0) {
+        score += bayesianScore;
+        factors.push("bayesian");
+      }
     }
 
     scores.push({ number: n, score, factors });

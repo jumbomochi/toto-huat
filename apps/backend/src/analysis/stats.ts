@@ -90,3 +90,27 @@ function lnGamma(z: number): number {
 export function zScore(observed: number, expected: number, stdDev: number): number {
   return (observed - expected) / stdDev;
 }
+
+/**
+ * Standard normal CDF using Abramowitz & Stegun erfc approximation (formula 7.1.26).
+ * Phi(z) = 1 - 0.5 * erfc(z / sqrt(2)) for z >= 0, symmetry for z < 0.
+ * Maximum error ~1.5e-7.
+ */
+export function normalCDF(z: number): number {
+  const a1 = 0.254829592;
+  const a2 = -0.284496736;
+  const a3 = 1.421413741;
+  const a4 = -1.453152027;
+  const a5 = 1.061405429;
+  const p = 0.3275911;
+
+  const absZ = Math.abs(z);
+  const u = absZ / Math.SQRT2;
+  const t = 1 / (1 + p * u);
+  // erfc(u) ≈ (a1*t + a2*t^2 + ... + a5*t^5) * exp(-u^2)
+  const erfc = ((((a5 * t + a4) * t + a3) * t + a2) * t + a1) * t * Math.exp(-u * u);
+  // Phi(|z|) = 1 - 0.5 * erfc(|z| / sqrt(2))
+  const phiAbs = 1 - 0.5 * erfc;
+
+  return z >= 0 ? phiAbs : 1 - phiAbs;
+}

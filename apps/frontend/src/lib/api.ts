@@ -13,6 +13,21 @@ export const api = {
   trends: (windowSize = 20) => fetchJSON<TrendsResponse>(`/api/trends?window=${windowSize}`),
   recommend: () => fetchJSON<RecommendResponse>("/api/recommend"),
   draws: (page = 1, limit = 20) => fetchJSON<DrawsResponse>(`/api/draws?page=${page}&limit=${limit}`),
+  bayesian: (window?: number, alpha?: number) => {
+    const params = new URLSearchParams();
+    if (window != null) params.set("window", String(window));
+    if (alpha != null) params.set("alpha", String(alpha));
+    const qs = params.toString();
+    return fetchJSON<BayesianResponse>(`/api/bayesian${qs ? `?${qs}` : ""}`);
+  },
+  backtest: (window?: number, minTrain?: number, summaryOnly = false) => {
+    const params = new URLSearchParams();
+    if (window != null) params.set("window", String(window));
+    if (minTrain != null) params.set("minTrain", String(minTrain));
+    if (summaryOnly) params.set("summary", "true");
+    const qs = params.toString();
+    return fetchJSON<BacktestResponse>(`/api/backtest${qs ? `?${qs}` : ""}`);
+  },
 };
 
 // Response types matching backend API
@@ -52,4 +67,44 @@ export interface DrawsResponse {
   total: number;
   page: number;
   limit: number;
+}
+
+export interface BayesianEstimate {
+  number: number;
+  posteriorMean: number;
+  credibleIntervalLow: number;
+  credibleIntervalHigh: number;
+  observedCount: number;
+  deviationFromUniform: number;
+}
+
+export interface BayesianResponse {
+  estimates: BayesianEstimate[];
+  topPicks: number[];
+  totalDrawsUsed: number;
+  windowSize: number | null;
+}
+
+export interface BacktestStep {
+  drawNumber: number;
+  predicted: number[];
+  actual: number[];
+  hits: number;
+  cumulativeHitRate: number;
+}
+
+export interface BacktestSummary {
+  totalDrawsPredicted: number;
+  totalHits: number;
+  averageHitsPerDraw: number;
+  baselineHitsPerDraw: number;
+  improvementOverBaseline: number;
+  hitsDistribution: Record<number, number>;
+  zScore: number;
+  pValue: number;
+}
+
+export interface BacktestResponse {
+  summary: BacktestSummary;
+  steps?: BacktestStep[];
 }

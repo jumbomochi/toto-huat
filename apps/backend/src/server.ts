@@ -8,6 +8,8 @@ import { chiSquaredUniformityTest, oddEvenDistribution, highLowDistribution, gro
 import { consecutiveAnalysis, sumRangeAnalysis, pairFrequency } from "./analysis/patterns.js";
 import { trendingNumbers } from "./analysis/trends.js";
 import { generatePicks } from "./analysis/recommend.js";
+import { computeBayesianModel } from "./analysis/bayesian.js";
+import { runBacktest } from "./analysis/backtest.js";
 import type { DrawRecord } from "./db/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -70,6 +72,28 @@ app.get("/api/trends", (c) => {
 
 app.get("/api/recommend", (c) => {
   return c.json(withDraws((draws) => generatePicks(draws)));
+});
+
+app.get("/api/bayesian", (c) => {
+  const window = c.req.query("window") ? parseInt(c.req.query("window")!, 10) : undefined;
+  const alpha = c.req.query("alpha") ? parseFloat(c.req.query("alpha")!) : undefined;
+  return c.json(withDraws((draws) => computeBayesianModel(draws, window, alpha)));
+});
+
+app.get("/api/backtest", (c) => {
+  const window = c.req.query("window") ? parseInt(c.req.query("window")!, 10) : undefined;
+  const minTrain = c.req.query("minTrain") ? parseInt(c.req.query("minTrain")!, 10) : undefined;
+  const summaryOnly = c.req.query("summary") === "true";
+  return c.json(withDraws((draws) => {
+    const result = runBacktest(draws, {
+      trainingWindowSize: window,
+      minTrainingDraws: minTrain,
+    });
+    if (summaryOnly) {
+      return { summary: result.summary };
+    }
+    return result;
+  }));
 });
 
 app.get("/api/draws", (c) => {
