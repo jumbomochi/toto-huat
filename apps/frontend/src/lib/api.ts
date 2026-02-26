@@ -10,7 +10,7 @@ export const api = {
   frequency: () => fetchJSON<FrequencyResponse>("/api/frequency"),
   distribution: () => fetchJSON<DistributionResponse>("/api/distribution"),
   patterns: () => fetchJSON<PatternsResponse>("/api/patterns"),
-  trends: (window = 20) => fetchJSON<TrendsResponse>(`/api/trends?window=${window}`),
+  trends: (windowSize = 20) => fetchJSON<TrendsResponse>(`/api/trends?window=${windowSize}`),
   recommend: () => fetchJSON<RecommendResponse>("/api/recommend"),
   draws: (page = 1, limit = 20) => fetchJSON<DrawsResponse>(`/api/draws?page=${page}&limit=${limit}`),
 };
