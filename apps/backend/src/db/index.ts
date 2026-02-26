@@ -76,6 +76,26 @@ export function getGaps(db: Database.Database): number[] {
   return gaps;
 }
 
+export interface DrawRecord {
+  drawNumber: number;
+  drawDate: string;
+  numbers: [number, number, number, number, number, number];
+  additional: number;
+}
+
+export function getAllDraws(db: Database.Database): DrawRecord[] {
+  const rows = db.prepare(
+    "SELECT draw_number, draw_date, num1, num2, num3, num4, num5, num6, additional FROM draws ORDER BY draw_number"
+  ).all() as { draw_number: number; draw_date: string; num1: number; num2: number; num3: number; num4: number; num5: number; num6: number; additional: number }[];
+
+  return rows.map((r) => ({
+    drawNumber: r.draw_number,
+    drawDate: r.draw_date,
+    numbers: [r.num1, r.num2, r.num3, r.num4, r.num5, r.num6] as [number, number, number, number, number, number],
+    additional: r.additional,
+  }));
+}
+
 export function openDb(path: string): Database.Database {
   const db = new Database(path);
   initDb(db);

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import Database from "better-sqlite3";
-import { initDb, upsertDraw, upsertPrizes, getLatestDrawNumber, getDrawCount, getGaps } from "./index.js";
+import { initDb, upsertDraw, upsertPrizes, getLatestDrawNumber, getDrawCount, getGaps, getAllDraws } from "./index.js";
 
 describe("database", () => {
   let db: Database.Database;
@@ -88,5 +88,18 @@ describe("database", () => {
     upsertDraw(db, { drawNumber: 102, drawDate: "2000-01-08", numbers: [1,2,3,4,5,6], additional: 7 });
     upsertDraw(db, { drawNumber: 105, drawDate: "2000-01-22", numbers: [1,2,3,4,5,6], additional: 7 });
     expect(getGaps(db)).toEqual([101, 103, 104]);
+  });
+
+  it("returns all draws ordered by draw_number", () => {
+    upsertDraw(db, { drawNumber: 4158, drawDate: "2026-02-19", numbers: [8, 16, 17, 34, 38, 48], additional: 25 });
+    upsertDraw(db, { drawNumber: 4159, drawDate: "2026-02-23", numbers: [24, 26, 30, 32, 37, 47], additional: 2 });
+
+    const draws = getAllDraws(db);
+    expect(draws).toHaveLength(2);
+    expect(draws[0].drawNumber).toBe(4158);
+    expect(draws[0].numbers).toEqual([8, 16, 17, 34, 38, 48]);
+    expect(draws[0].additional).toBe(25);
+    expect(draws[0].drawDate).toBe("2026-02-19");
+    expect(draws[1].drawNumber).toBe(4159);
   });
 });
