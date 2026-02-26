@@ -6,19 +6,30 @@ import { NumberGrid } from "@/components/number-grid"
 import { NumberBall } from "@/components/number-ball"
 
 export default function FrequencyPage() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["frequency"],
     queryFn: api.frequency,
   })
 
-  if (isLoading) return <FrequencySkeleton />
-  if (!data) return null
-
-  const maxFreq = Math.max(...Object.values(data.frequencies.main))
+  const maxFreq = data ? Math.max(...Object.values(data.frequencies.main)) : 0
 
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold">Frequency Explorer</h2>
+
+      {isError && <p className="text-sm text-destructive">Failed to load frequency data.</p>}
+
+      {isLoading ? (
+        <>
+          <Card><CardContent className="pt-6"><Skeleton className="h-64 w-full" /></CardContent></Card>
+          <div className="grid md:grid-cols-2 gap-4">
+            <Card><CardContent className="pt-6"><Skeleton className="h-24 w-full" /></CardContent></Card>
+            <Card><CardContent className="pt-6"><Skeleton className="h-24 w-full" /></CardContent></Card>
+          </div>
+          <Card><CardContent className="pt-6"><Skeleton className="h-48 w-full" /></CardContent></Card>
+        </>
+      ) : !data ? null : (
+        <>
 
       <Card>
         <CardHeader>
@@ -101,19 +112,8 @@ export default function FrequencyPage() {
           </div>
         </CardContent>
       </Card>
-    </div>
-  )
-}
-
-function FrequencySkeleton() {
-  return (
-    <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Frequency Explorer</h2>
-      <Card>
-        <CardContent className="pt-6">
-          <Skeleton className="h-64 w-full" />
-        </CardContent>
-      </Card>
+      </>
+      )}
     </div>
   )
 }

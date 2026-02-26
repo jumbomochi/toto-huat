@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 interface NumberGridProps {
@@ -8,13 +9,16 @@ interface NumberGridProps {
 }
 
 export function NumberGrid({ frequencies, hotNumbers, coldNumbers, maxFrequency }: NumberGridProps) {
+  const hotSet = useMemo(() => new Set(hotNumbers), [hotNumbers])
+  const coldSet = useMemo(() => new Set(coldNumbers), [coldNumbers])
+
   return (
     <div className="grid grid-cols-7 gap-2">
       {Array.from({ length: 49 }, (_, i) => i + 1).map((n) => {
         const count = frequencies[String(n)] || 0
         const intensity = maxFrequency > 0 ? count / maxFrequency : 0
-        const isHot = hotNumbers.includes(n)
-        const isCold = coldNumbers.includes(n)
+        const isHot = hotSet.has(n)
+        const isCold = coldSet.has(n)
 
         return (
           <div

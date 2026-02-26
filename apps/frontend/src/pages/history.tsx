@@ -10,7 +10,7 @@ export default function HistoryPage() {
   const [page, setPage] = useState(1)
   const limit = 20
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ["draws", page],
     queryFn: () => api.draws(page, limit),
   })
@@ -28,7 +28,9 @@ export default function HistoryPage() {
 
       <Card>
         <CardContent className="pt-6">
-          {isLoading ? (
+          {isError ? (
+            <p className="text-sm text-destructive">Failed to load draw history.</p>
+          ) : isLoading ? (
             <div className="space-y-4">
               {Array.from({ length: 10 }).map((_, i) => (
                 <Skeleton key={i} className="h-12 w-full" />
@@ -48,8 +50,8 @@ export default function HistoryPage() {
                     {draw.drawDate}
                   </div>
                   <div className="flex gap-1.5 flex-1">
-                    {draw.numbers.map((n, i) => (
-                      <NumberBall key={i} number={n} size="sm" />
+                    {draw.numbers.map((n) => (
+                      <NumberBall key={n} number={n} size="sm" />
                     ))}
                     <span className="mx-1 text-muted-foreground">+</span>
                     <NumberBall number={draw.additional} variant="additional" size="sm" />

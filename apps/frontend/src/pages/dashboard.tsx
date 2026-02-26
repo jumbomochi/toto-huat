@@ -6,20 +6,20 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { NumberBall } from "@/components/number-ball"
 
 export default function DashboardPage() {
-  const { data: rec, isLoading: recLoading } = useQuery({
+  const { data: rec, isLoading: recLoading, isError: recError } = useQuery({
     queryKey: ["recommend"],
     queryFn: api.recommend,
   })
-  const { data: freq, isLoading: freqLoading } = useQuery({
+  const { data: freq, isLoading: freqLoading, isError: freqError } = useQuery({
     queryKey: ["frequency"],
     queryFn: api.frequency,
   })
-  const { data: dist, isLoading: distLoading } = useQuery({
+  const { data: dist, isLoading: distLoading, isError: distError } = useQuery({
     queryKey: ["distribution"],
     queryFn: api.distribution,
   })
-  const { data: trends, isLoading: trendsLoading } = useQuery({
-    queryKey: ["trends"],
+  const { data: trends, isLoading: trendsLoading, isError: trendsError } = useQuery({
+    queryKey: ["trends", 20],
     queryFn: () => api.trends(20),
   })
 
@@ -39,6 +39,8 @@ export default function DashboardPage() {
                 <Skeleton key={i} className="h-14 w-14 rounded-full" />
               ))}
             </div>
+          ) : recError ? (
+            <p className="text-sm text-destructive">Failed to load recommendations.</p>
           ) : rec ? (
             <>
               <div className="flex gap-3 mb-4">
@@ -64,7 +66,9 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Total Draws</p>
-            {freqLoading ? <Skeleton className="h-8 w-20 mt-1" /> : (
+            {freqLoading ? <Skeleton className="h-8 w-20 mt-1" /> : freqError ? (
+              <p className="text-sm text-destructive">Error</p>
+            ) : (
               <p className="text-2xl font-bold">{freq?.frequencies.totalDraws.toLocaleString()}</p>
             )}
           </CardContent>
@@ -72,7 +76,9 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Bias Detected</p>
-            {distLoading ? <Skeleton className="h-8 w-20 mt-1" /> : (
+            {distLoading ? <Skeleton className="h-8 w-20 mt-1" /> : distError ? (
+              <p className="text-sm text-destructive">Error</p>
+            ) : (
               <Badge variant={dist?.chiSquared.isSignificant ? "destructive" : "secondary"}>
                 {dist?.chiSquared.isSignificant ? "Yes" : "No"}
               </Badge>
@@ -82,7 +88,9 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Hot Numbers</p>
-            {freqLoading ? <Skeleton className="h-8 w-20 mt-1" /> : (
+            {freqLoading ? <Skeleton className="h-8 w-20 mt-1" /> : freqError ? (
+              <p className="text-sm text-destructive">Error</p>
+            ) : (
               <p className="text-2xl font-bold">{freq?.hotCold.hot.length}</p>
             )}
           </CardContent>
@@ -90,7 +98,9 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground">Trending Up</p>
-            {trendsLoading ? <Skeleton className="h-8 w-20 mt-1" /> : (
+            {trendsLoading ? <Skeleton className="h-8 w-20 mt-1" /> : trendsError ? (
+              <p className="text-sm text-destructive">Error</p>
+            ) : (
               <p className="text-2xl font-bold">
                 {trends?.trending.filter((t) => t.direction === "up").length}
               </p>
@@ -108,6 +118,8 @@ export default function DashboardPage() {
           <CardContent>
             {freqLoading ? (
               <Skeleton className="h-12 w-full" />
+            ) : freqError ? (
+              <p className="text-sm text-destructive">Failed to load.</p>
             ) : (
               <div className="flex flex-wrap gap-2">
                 {freq?.hotCold.hot.map((n) => (
@@ -127,6 +139,8 @@ export default function DashboardPage() {
           <CardContent>
             {freqLoading ? (
               <Skeleton className="h-12 w-full" />
+            ) : freqError ? (
+              <p className="text-sm text-destructive">Failed to load.</p>
             ) : (
               <div className="space-y-2">
                 {freq?.overdue.slice(0, 5).map((o) => (
