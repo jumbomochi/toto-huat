@@ -11,11 +11,18 @@ export interface DrawInput {
 export interface PrizeInput {
   group: number;
   shareAmount: number | null;
-  winners: number;
+  winners: number | null;
 }
 
 export function initDb(db: Database.Database): void {
   db.pragma("journal_mode = WAL");
+
+  // Migrate: recreate prizes table if winners column is NOT NULL (old schema)
+  const col = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='prizes'").get() as { sql: string } | undefined;
+  if (col?.sql?.includes("winners     INTEGER NOT NULL")) {
+    db.exec("DROP TABLE prizes");
+  }
+
   db.exec(SCHEMA);
 }
 

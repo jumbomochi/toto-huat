@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS prizes (
   draw_number INTEGER NOT NULL,
   group_num   INTEGER NOT NULL,
   share_amount REAL,
-  winners     INTEGER NOT NULL,
+  winners     INTEGER,
   PRIMARY KEY (draw_number, group_num),
   FOREIGN KEY (draw_number) REFERENCES draws(draw_number)
 );

@@ -26,7 +26,11 @@ async function ingestDraw(db: ReturnType<typeof openDb>, drawNumber: number): Pr
     additional: parsed.additional,
   });
   if (parsed.prizes.length > 0) {
-    upsertPrizes(db, parsed.drawNumber, parsed.prizes);
+    try {
+      upsertPrizes(db, parsed.drawNumber, parsed.prizes);
+    } catch (err) {
+      console.warn(`Draw ${parsed.drawNumber}: prizes failed — ${err}`);
+    }
   }
   console.log(`Draw ${parsed.drawNumber} (${parsed.drawDate}): ${parsed.numbers.join(", ")} + ${parsed.additional}`);
   return true;
