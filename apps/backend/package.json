@@ -7,6 +7,11 @@
     "ingest:latest": "tsx src/cli.ts latest",
     "ingest:backfill": "tsx src/cli.ts backfill",
     "ingest:status": "tsx src/cli.ts status",
+    "analyze:frequency": "tsx src/analyze-cli.ts frequency",
+    "analyze:bias": "tsx src/analyze-cli.ts bias",
+    "analyze:patterns": "tsx src/analyze-cli.ts patterns",
+    "analyze:trends": "tsx src/analyze-cli.ts trends",
+    "analyze:recommend": "tsx src/analyze-cli.ts recommend",
     "test": "vitest run",
     "test:watch": "vitest"
   },
