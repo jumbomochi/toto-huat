@@ -12,12 +12,15 @@
     "analyze:patterns": "tsx src/analyze-cli.ts patterns",
     "analyze:trends": "tsx src/analyze-cli.ts trends",
     "analyze:recommend": "tsx src/analyze-cli.ts recommend",
+    "dev": "tsx watch src/serve.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@hono/node-server": "^1.19.9",
     "better-sqlite3": "^12.6.2",
-    "cheerio": "^1.2.0"
+    "cheerio": "^1.2.0",
+    "hono": "^4.12.3"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
