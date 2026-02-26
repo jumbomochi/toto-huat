@@ -24,7 +24,7 @@ export function NumberGrid({ frequencies, hotNumbers, coldNumbers, maxFrequency 
           <div
             key={n}
             className={cn(
-              "aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-medium transition-colors",
+              "aspect-square rounded-lg flex flex-col items-center justify-center text-xl font-medium transition-colors",
               isHot && "bg-amber-600/80 text-white",
               isCold && "bg-blue-600/80 text-white",
               !isHot && !isCold && "text-zinc-300",
@@ -35,8 +35,8 @@ export function NumberGrid({ frequencies, hotNumbers, coldNumbers, maxFrequency 
                 : undefined
             }
           >
-            <span className="font-bold">{n}</span>
-            <span className="text-[10px] opacity-75">{count}</span>
+            <span className="text-2xl font-bold">{n}</span>
+            <span className="text-sm opacity-75">{count}</span>
           </div>
         )
       })}
