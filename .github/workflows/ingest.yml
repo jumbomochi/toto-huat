@@ -31,7 +31,9 @@ jobs:
 
       - name: Run ingestion
         working-directory: apps/backend
-        run: pnpm ingest:latest
+        run: |
+          mkdir -p data
+          pnpm ingest:latest
 
       - name: Commit new data
         id: commit
