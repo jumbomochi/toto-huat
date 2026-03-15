@@ -1,4 +1,3 @@
 node_modules/
 dist/
 .build/
-apps/backend/data/toto.db
